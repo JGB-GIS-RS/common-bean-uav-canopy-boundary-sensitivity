@@ -713,7 +713,6 @@ for (i in seq_len(nrow(flights))) {
           r,
           extraction_geom
         )
-
         spectral_rows[[spectral_counter]] <- data.frame(
           flight = flight_id,
           date = date_txt,
@@ -1014,3 +1013,98 @@ write.csv(
   spectral_file,
   row.names = FALSE,
   quote = FALSE
+)
+
+write.csv(
+  geometry_qa,
+  geometry_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+write.csv(
+  crossplot_qa,
+  crossplot_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+if (nrow(baseline_check) > 0) {
+  write.csv(
+    baseline_check,
+    baseline_file,
+    row.names = FALSE,
+    quote = FALSE
+  )
+}
+
+# ------------------------------------------------------------
+# 9. QA REPORT
+# ------------------------------------------------------------
+
+cat("\n")
+cat("====================================================\n")
+cat("BOUNDARY PERTURBATION COMPLETED\n")
+cat("====================================================\n")
+cat(
+  "Spectral rows: ",
+  nrow(spectral),
+  "\n",
+  sep = ""
+)
+cat(
+  "Geometry QA rows: ",
+  nrow(geometry_qa),
+  "\n",
+  sep = ""
+)
+cat(
+  "Positive-buffer overlap QA rows: ",
+  nrow(crossplot_qa),
+  "\n",
+  sep = ""
+)
+
+if (nrow(baseline_check) > 0) {
+  cat(
+    "Maximum baseline reproduction difference: ",
+    format(
+      max(
+        baseline_check$abs_difference,
+        na.rm = TRUE
+      ),
+      scientific = TRUE
+    ),
+    "\n",
+    sep = ""
+  )
+}
+
+cat("\nOutputs:\n")
+cat(
+  spectral_file,
+  "\n"
+)
+cat(
+  geometry_file,
+  "\n"
+)
+cat(
+  crossplot_file,
+  "\n"
+)
+
+if (nrow(baseline_check) > 0) {
+  cat(
+    baseline_file,
+    "\n"
+  )
+}
+
+cat("\n")
+cat("Important: perturbations are deterministic mask transformations,\n")
+cat("not independent experimental replicates.\n")
+
+# ============================================================
+# END
+# ============================================================

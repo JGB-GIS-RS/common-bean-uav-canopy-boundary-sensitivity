@@ -696,8 +696,7 @@ for (i in seq_len(nrow(group_keys))) {
     ring_outer_cm = key$ring_outer_cm,
     ring_mid_cm = key$ring_mid_cm,
     n_subplots = length(
-      unique(z$subplot)
-    ),
+      unique(z$subplot)    ),
     mean_ring_value = mean(
       z$ring_mean,
       na.rm = TRUE
@@ -997,3 +996,9 @@ cat(
 )
 cat(
   gradient_summary_file,
+  "\n"
+)
+
+# ============================================================
+# END
+# ============================================================
