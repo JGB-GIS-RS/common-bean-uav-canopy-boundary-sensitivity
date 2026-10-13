@@ -8,3 +8,7 @@ renv/library/
 renv/staging/
 renv/python/
 renv/sandbox/
+
+# Large local spatial inputs and generated figures
+data/spatial/
+figures/
