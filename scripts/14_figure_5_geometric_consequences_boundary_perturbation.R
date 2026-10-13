@@ -38,7 +38,6 @@ rm(list = ls())
 library(readr)
 library(dplyr)
 library(ggplot2)
-library(stringr)
 library(patchwork)
 library(grid)
 
