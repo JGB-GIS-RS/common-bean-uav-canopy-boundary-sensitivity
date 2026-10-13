@@ -691,8 +691,7 @@ for (i in seq_len(nrow(direction_keys))) {
   
   
   fit_erosion_13 <- fit_origin(
-    x =
-      erosion$delta_mask_area_pct,
+    x =      erosion$delta_mask_area_pct,
     
     y =
       erosion$delta_index_pct
@@ -992,3 +991,793 @@ for (i in seq_len(nrow(direction_keys))) {
     
     growth_stage =
       key$growth_stage,
+    
+    subplot =
+      key$subplot,
+    
+    index =
+      key$index,
+    
+    boundary_direction =
+      "Dilation",
+    
+    beta_1to3 =
+      beta_dilation_13,
+    
+    abs_beta_1to3 =
+      abs_dilation_13,
+    
+    r2_1to3 =
+      unname(
+        fit_dilation_13[
+          "r2_origin"
+        ]
+      ),
+    
+    beta_1to2 =
+      beta_dilation_12,
+    
+    abs_beta_1to2 =
+      abs_dilation_12,
+    
+    r2_1to2 =
+      unname(
+        fit_dilation_12[
+          "r2_origin"
+        ]
+      ),
+    
+    relative_difference_pct =
+      dilation_range_change,
+    
+    abs_relative_difference_pct =
+      abs(
+        dilation_range_change
+      ),
+    
+    stringsAsFactors = FALSE
+  )
+  
+  directional_long_counter <-
+    directional_long_counter + 1
+}
+
+
+directional <- do.call(
+  rbind,
+  directional_rows
+)
+
+rownames(directional) <- NULL
+
+
+directional_range <- do.call(
+  rbind,
+  directional_long_rows
+)
+
+rownames(directional_range) <- NULL
+
+
+if (nrow(directional) != 75) {
+  stop(
+    "Expected 75 directional wide records; found ",
+    nrow(directional)
+  )
+}
+
+if (nrow(directional_range) != 150) {
+  stop(
+    "Expected 150 directional robustness records; found ",
+    nrow(directional_range)
+  )
+}
+
+
+# ------------------------------------------------------------
+# 8. DIRECTIONAL RANGE SUMMARY
+# ------------------------------------------------------------
+
+directional_range_summary <- summarize_by_keys(
+  data = directional_range,
+  
+  keys = c(
+    "growth_stage",
+    "index",
+    "boundary_direction"
+  ),
+  
+  builder = function(z) {
+    
+    data.frame(
+      n_subplots =
+        nrow(z),
+      
+      mean_abs_beta_1to3 =
+        mean(
+          z$abs_beta_1to3,
+          na.rm = TRUE
+        ),
+      
+      mean_abs_beta_1to2 =
+        mean(
+          z$abs_beta_1to2,
+          na.rm = TRUE
+        ),
+      
+      mean_abs_relative_difference_pct =
+        mean(
+          z$abs_relative_difference_pct,
+          na.rm = TRUE
+        ),
+      
+      median_abs_relative_difference_pct =
+        median(
+          z$abs_relative_difference_pct,
+          na.rm = TRUE
+        ),
+      
+      max_abs_relative_difference_pct =
+        max(
+          z$abs_relative_difference_pct,
+          na.rm = TRUE
+        ),
+      
+      mean_r2_1to3 =
+        mean(
+          z$r2_1to3,
+          na.rm = TRUE
+        ),
+      
+      mean_r2_1to2 =
+        mean(
+          z$r2_1to2,
+          na.rm = TRUE
+        ),
+      
+      stringsAsFactors = FALSE
+    )
+  }
+)
+
+
+# ------------------------------------------------------------
+# 9. DIRECTIONAL BETA SUMMARY
+# ------------------------------------------------------------
+
+direction_summary <- summarize_by_keys(
+  data = directional,
+  
+  keys = c(
+    "growth_stage",
+    "index"
+  ),
+  
+  builder = function(z) {
+    
+    data.frame(
+      n_subplots =
+        nrow(z),
+      
+      mean_abs_beta_erosion =
+        mean(
+          z$abs_beta_erosion,
+          na.rm = TRUE
+        ),
+      
+      median_abs_beta_erosion =
+        median(
+          z$abs_beta_erosion,
+          na.rm = TRUE
+        ),
+      
+      mean_abs_beta_dilation =
+        mean(
+          z$abs_beta_dilation,
+          na.rm = TRUE
+        ),
+      
+      median_abs_beta_dilation =
+        median(
+          z$abs_beta_dilation,
+          na.rm = TRUE
+        ),
+      
+      median_dilation_to_erosion_ratio =
+        median(
+          z$dilation_to_erosion_ratio,
+          na.rm = TRUE
+        ),
+      
+      mean_directional_asymmetry_pct =
+        mean(
+          z$directional_asymmetry_pct,
+          na.rm = TRUE
+        ),
+      
+      median_directional_asymmetry_pct =
+        median(
+          z$directional_asymmetry_pct,
+          na.rm = TRUE
+        ),
+      
+      max_directional_asymmetry_pct =
+        max(
+          z$directional_asymmetry_pct,
+          na.rm = TRUE
+        ),
+      
+      mean_r2_erosion =
+        mean(
+          z$r2_origin_erosion,
+          na.rm = TRUE
+        ),
+      
+      mean_r2_dilation =
+        mean(
+          z$r2_origin_dilation,
+          na.rm = TRUE
+        ),
+      
+      stringsAsFactors = FALSE
+    )
+  }
+)
+
+
+# ------------------------------------------------------------
+# 10. DIRECTIONAL LEAVE-ONE-SUBPLOT-OUT
+# ------------------------------------------------------------
+
+directional_lopo_rows <- list()
+directional_lopo_counter <- 1
+
+
+directional_lopo_keys <- unique(
+  directional_range[
+    ,
+    c(
+      "growth_stage",
+      "index",
+      "boundary_direction"
+    )
+  ]
+)
+
+
+for (i in seq_len(nrow(directional_lopo_keys))) {
+  
+  key <- directional_lopo_keys[
+    i,
+    ,
+    drop = FALSE
+  ]
+  
+  z <- directional_range[
+    directional_range$growth_stage ==
+      key$growth_stage &
+      directional_range$index ==
+      key$index &
+      directional_range$boundary_direction ==
+      key$boundary_direction,
+    ,
+    drop = FALSE
+  ]
+  
+  full_mean <- mean(
+    z$abs_beta_1to3,
+    na.rm = TRUE
+  )
+  
+  
+  for (subplot in sort(
+    unique(
+      z$subplot
+    )
+  )) {
+    
+    reduced <- z[
+      z$subplot != subplot,
+      ,
+      drop = FALSE
+    ]
+    
+    lopo_mean <- mean(
+      reduced$abs_beta_1to3,
+      na.rm = TRUE
+    )
+    
+    relative_change_pct <-
+      safe_relative_difference_pct(
+        reference =
+          full_mean,
+        
+        comparison =
+          lopo_mean
+      )
+    
+    
+    directional_lopo_rows[[directional_lopo_counter]] <- data.frame(
+      
+      growth_stage =
+        key$growth_stage,
+      
+      index =
+        key$index,
+      
+      boundary_direction =
+        key$boundary_direction,
+      
+      left_out_subplot =
+        subplot,
+      
+      full_mean_abs_beta =
+        full_mean,
+      
+      lopo_mean_abs_beta =
+        lopo_mean,
+      
+      relative_change_pct =
+        relative_change_pct,
+      
+      abs_relative_change_pct =
+        abs(
+          relative_change_pct
+        ),
+      
+      stringsAsFactors = FALSE
+    )
+    
+    directional_lopo_counter <-
+      directional_lopo_counter + 1
+  }
+}
+
+
+directional_lopo <- do.call(
+  rbind,
+  directional_lopo_rows
+)
+
+rownames(directional_lopo) <- NULL
+
+
+if (nrow(directional_lopo) != 150) {
+  stop(
+    "Expected 150 directional LOPO records; found ",
+    nrow(directional_lopo)
+  )
+}
+
+
+directional_lopo_summary <- summarize_by_keys(
+  data = directional_lopo,
+  
+  keys = c(
+    "growth_stage",
+    "index",
+    "boundary_direction"
+  ),
+  
+  builder = function(z) {
+    
+    data.frame(
+      full_mean_abs_beta =
+        unique(
+          z$full_mean_abs_beta
+        )[1],
+      
+      mean_abs_lopo_change_pct =
+        mean(
+          z$abs_relative_change_pct,
+          na.rm = TRUE
+        ),
+      
+      median_abs_lopo_change_pct =
+        median(
+          z$abs_relative_change_pct,
+          na.rm = TRUE
+        ),
+      
+      max_abs_lopo_change_pct =
+        max(
+          z$abs_relative_change_pct,
+          na.rm = TRUE
+        ),
+      
+      min_lopo_mean_abs_beta =
+        min(
+          z$lopo_mean_abs_beta,
+          na.rm = TRUE
+        ),
+            max_lopo_mean_abs_beta =
+        max(
+          z$lopo_mean_abs_beta,
+          na.rm = TRUE
+        ),
+      
+      stringsAsFactors = FALSE
+    )
+  }
+)
+
+
+# ------------------------------------------------------------
+# 11. EXPORT
+# ------------------------------------------------------------
+
+range_file <- file.path(
+  derived_root,
+  "robustness_range_by_plot.csv"
+)
+
+range_summary_file <- file.path(
+  derived_root,
+  "robustness_range_summary.csv"
+)
+
+combined_lopo_file <- file.path(
+  derived_root,
+  "robustness_leave_one_subplot_out.csv"
+)
+
+combined_lopo_summary_file <- file.path(
+  derived_root,
+  "robustness_leave_one_subplot_out_summary.csv"
+)
+
+
+direction_file <- file.path(
+  derived_root,
+  "directional_beta_by_plot.csv"
+)
+
+direction_summary_file <- file.path(
+  derived_root,
+  "directional_beta_summary.csv"
+)
+
+directional_range_file <- file.path(
+  derived_root,
+  "directional_robustness_range_by_plot.csv"
+)
+
+directional_range_summary_file <- file.path(
+  derived_root,
+  "directional_robustness_range_summary.csv"
+)
+
+directional_lopo_file <- file.path(
+  derived_root,
+  "directional_robustness_leave_one_subplot_out.csv"
+)
+
+directional_lopo_summary_file <- file.path(
+  derived_root,
+  "directional_robustness_leave_one_subplot_out_summary.csv"
+)
+
+
+write.csv(
+  range_robustness,
+  range_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+write.csv(
+  range_summary,
+  range_summary_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+write.csv(
+  combined_lopo,
+  combined_lopo_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+write.csv(
+  combined_lopo_summary,
+  combined_lopo_summary_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+
+write.csv(
+  directional,
+  direction_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+write.csv(
+  direction_summary,
+  direction_summary_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+write.csv(
+  directional_range,
+  directional_range_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+write.csv(
+  directional_range_summary,
+  directional_range_summary_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+write.csv(
+  directional_lopo,
+  directional_lopo_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+write.csv(
+  directional_lopo_summary,
+  directional_lopo_summary_file,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+
+# ------------------------------------------------------------
+# 12. REPORT
+# ------------------------------------------------------------
+
+erosion_range <- directional_range[
+  directional_range$boundary_direction ==
+    "Erosion",
+  ,
+  drop = FALSE
+]
+
+dilation_range <- directional_range[
+  directional_range$boundary_direction ==
+    "Dilation",
+  ,
+  drop = FALSE
+]
+
+
+erosion_lopo_summary <- directional_lopo_summary[
+  directional_lopo_summary$boundary_direction ==
+    "Erosion",
+  ,
+  drop = FALSE
+]
+
+dilation_lopo_summary <- directional_lopo_summary[
+  directional_lopo_summary$boundary_direction ==
+    "Dilation",
+  ,
+  drop = FALSE
+]
+
+
+cat("\n")
+cat("====================================================\n")
+cat("ROBUSTNESS ANALYSIS COMPLETED\n")
+cat("====================================================\n")
+
+
+cat("\nSUPPORTING COMBINED BETA\n")
+cat("------------------------\n")
+
+cat(
+  "Mean absolute relative beta difference (±1-2 vs ±1-3 cm): ",
+  sprintf(
+    "%.2f%%",
+    mean(
+      range_robustness$absolute_relative_difference_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+cat(
+  "Median of stage × index maximum LOPO changes: ",
+  sprintf(
+    "%.2f%%",
+    median(
+      combined_lopo_summary$max_abs_lopo_change_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+
+cat("\nPRIMARY DIRECTION-SPECIFIC BETA\n")
+cat("-------------------------------\n")
+
+cat(
+  "Erosion — mean absolute range difference (±1-2 vs ±1-3 cm): ",
+  sprintf(
+    "%.2f%%",
+    mean(
+      erosion_range$abs_relative_difference_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+cat(
+  "Erosion — median absolute range difference: ",
+  sprintf(
+    "%.2f%%",
+    median(
+      erosion_range$abs_relative_difference_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+cat(
+  "Dilation — mean absolute range difference (±1-2 vs ±1-3 cm): ",
+  sprintf(
+    "%.2f%%",
+    mean(
+      dilation_range$abs_relative_difference_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+cat(
+  "Dilation — median absolute range difference: ",
+  sprintf(
+    "%.2f%%",
+    median(
+      dilation_range$abs_relative_difference_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+
+cat("\nDirectional leave-one-subplot-out:\n")
+
+cat(
+  "Erosion — median of stage × index maximum changes: ",
+  sprintf(
+    "%.2f%%",
+    median(
+      erosion_lopo_summary$max_abs_lopo_change_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+cat(
+  "Erosion — largest stage × index maximum change: ",
+  sprintf(
+    "%.2f%%",
+    max(
+      erosion_lopo_summary$max_abs_lopo_change_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+cat(
+  "Dilation — median of stage × index maximum changes: ",
+  sprintf(
+    "%.2f%%",
+    median(
+      dilation_lopo_summary$max_abs_lopo_change_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+cat(
+  "Dilation — largest stage × index maximum change: ",
+  sprintf(
+    "%.2f%%",
+    max(
+      dilation_lopo_summary$max_abs_lopo_change_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+
+cat("\nDirectional asymmetry:\n")
+
+cat(
+  "Median directional asymmetry across plot × stage × index: ",
+  sprintf(
+    "%.2f%%",
+    median(
+      directional$directional_asymmetry_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+cat(
+  "Maximum directional asymmetry: ",
+  sprintf(
+    "%.2f%%",
+    max(
+      directional$directional_asymmetry_pct,
+      na.rm = TRUE
+    )
+  ),
+  "\n",
+  sep = ""
+)
+
+
+cat("\n")
+cat(
+  "Important: directional robustness is now evaluated on the same\n"
+)
+cat(
+  "erosion and dilation beta metrics used as the primary results.\n"
+)
+cat(
+  "No inferential significance tests or arbitrary pass/fail thresholds\n"
+)
+cat(
+  "are applied to these diagnostics.\n"
+)
+
+
+cat("\nOutputs:\n")
+
+output_files <- c(
+  range_file,
+  range_summary_file,
+  combined_lopo_file,
+  combined_lopo_summary_file,
+  direction_file,
+  direction_summary_file,
+  directional_range_file,
+  directional_range_summary_file,
+  directional_lopo_file,
+  directional_lopo_summary_file
+)
+
+for (f in output_files) {
+  cat(
+    f,
+    "\n"
+  )
+}
+
+
+# ============================================================
+# END
+# ============================================================
