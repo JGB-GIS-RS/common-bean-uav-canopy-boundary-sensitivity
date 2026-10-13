@@ -17,7 +17,7 @@
 #
 # Input
 # -----
-#   data/common_bean_uav_master_dataset.csv
+#   derived/canopy_summary_by_plot.csv
 #
 # Output
 # ------
@@ -113,10 +113,10 @@ find_project_root <- function(start = getwd()) {
 
 project_root <- find_project_root()
 
-master_file <- file.path(
+baseline_file <- file.path(
   project_root,
-  "data",
-  "common_bean_uav_master_dataset.csv"
+  "derived",
+  "canopy_summary_by_plot.csv"
 )
 
 figure_root <- file.path(
@@ -124,11 +124,11 @@ figure_root <- file.path(
   "figures"
 )
 
-if (!file.exists(master_file)) {
+if (!file.exists(baseline_file)) {
   
   stop(
-    "Missing master dataset:\n",
-    master_file
+    "Missing baseline canopy summary:\n",
+    baseline_file
   )
 }
 
@@ -146,7 +146,7 @@ if (!dir.exists(figure_root)) {
 # ------------------------------------------------------------
 
 d <- read.csv(
-  master_file,
+  baseline_file,
   stringsAsFactors = FALSE,
   check.names = FALSE
 )

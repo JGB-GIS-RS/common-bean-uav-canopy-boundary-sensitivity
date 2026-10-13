@@ -34,11 +34,51 @@ library(terra)
 # 1. PROJECT PATHS
 # ------------------------------------------------------------
 
-project_root <- normalizePath(
-  ".",
-  winslash = "/",
-  mustWork = TRUE
-)
+find_project_root <- function(start = getwd()) {
+
+  current <- normalizePath(
+    start,
+    winslash = "/",
+    mustWork = TRUE
+  )
+
+  repeat {
+
+    has_lockfile <- file.exists(
+      file.path(
+        current,
+        "renv.lock"
+      )
+    )
+
+    has_scripts <- dir.exists(
+      file.path(
+        current,
+        "scripts"
+      )
+    )
+
+    if (has_lockfile && has_scripts) {
+      return(current)
+    }
+
+    parent <- dirname(current)
+
+    if (identical(parent, current)) {
+      break
+    }
+
+    current <- parent
+  }
+
+  stop(
+    "Repository root could not be detected from working directory: ",
+    normalizePath(start, winslash = "/", mustWork = TRUE),
+    "\nExpected a parent directory containing renv.lock and scripts/."
+  )
+}
+
+project_root <- find_project_root()
 
 spatial_root <- file.path(
   project_root,
@@ -55,8 +95,7 @@ if (!dir.exists(spatial_root)) {
   stop(
     "Directory not found: ",
     spatial_root,
-    "\n\nOpen the RStudio project located at:\n",
-    "C:/common-bean-uav-nitrogen-gradient"
+    "\n\nExpected local spatial inputs under data/spatial/."
   )
 }
 
