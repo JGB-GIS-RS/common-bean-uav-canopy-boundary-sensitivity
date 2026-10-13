@@ -691,8 +691,7 @@ direction_summary$growth_stage <- factor(
 
 direction_summary$index <- factor(
   direction_summary$index,
-  levels = index_levels
-)
+  levels = index_levels)
 
 
 direction_summary$boundary_direction <- factor(
@@ -992,3 +991,364 @@ ggsave(
 # ============================================================
 
 asym_summary <- summarize_median_iqr(
+  data = direction,
+  
+  value_col =
+    "directional_asymmetry_pct",
+  
+  group_cols = c(
+    "growth_stage",
+    "index"
+  )
+)
+
+
+asym_summary$growth_stage <- factor(
+  asym_summary$growth_stage,
+  levels = stage_levels
+)
+
+
+asym_summary$index <- factor(
+  asym_summary$index,
+  levels = index_levels
+)
+
+
+pS1 <- ggplot(
+  direction,
+  
+  aes(
+    x = growth_stage,
+    y = directional_asymmetry_pct
+  )
+) +
+  
+  geom_point(
+    aes(
+      shape = subplot
+    ),
+    
+    position = position_jitter(
+      width = 0.06,
+      height = 0
+    ),
+    
+    size = 2.2,
+    alpha = 0.75
+  ) +
+  
+  geom_linerange(
+    data = asym_summary,
+    
+    aes(
+      x = growth_stage,
+      ymin = q25,
+      ymax = q75
+    ),
+    
+    inherit.aes = FALSE,
+    linewidth = 0.75
+  ) +
+  
+  geom_point(
+    data = asym_summary,
+    
+    aes(
+      x = growth_stage,
+      y = median
+    ),
+    
+    inherit.aes = FALSE,
+    shape = 21,
+    size = 3.2,
+    stroke = 0.85
+  ) +
+  
+  facet_wrap(
+    ~ index,
+    nrow = 1
+  ) +
+  
+  scale_shape_manual(
+    values = subplot_shapes,
+    breaks = subplot_levels,
+    name = "Plot"
+  ) +
+  
+  labs(
+    x =
+      "UAV acquisition stage",
+    
+    y =
+      "Directional asymmetry (%)"
+  ) +
+  
+  theme_publication
+
+
+figureS1_file <- file.path(
+  figure_root,
+  "Figure_S1_directional_asymmetry.png"
+)
+
+
+ggsave(
+  filename = figureS1_file,
+  plot = pS1,
+  width = 10.6,
+  height = 4.3,
+  units = "in",
+  dpi = 600,
+  bg = "white"
+)
+
+
+# ============================================================
+# FIGURE S2 — SUPPLEMENTARY
+# DIRECTIONAL NORMALIZED RESPONSE CURVES
+# ============================================================
+
+response_nonzero <- response[
+  response$perturb_cm != 0,
+  ,
+  drop = FALSE
+]
+
+
+response_nonzero$boundary_direction <- ifelse(
+  response_nonzero$perturb_cm < 0,
+  "Erosion",
+  "Dilation"
+)
+
+
+response_zero <- response[
+  response$perturb_cm == 0,
+  ,
+  drop = FALSE
+]
+
+
+response_zero_erosion <- response_zero
+
+response_zero_erosion$boundary_direction <-
+  "Erosion"
+
+
+response_zero_dilation <- response_zero
+
+response_zero_dilation$boundary_direction <-
+  "Dilation"
+
+
+response_curve <- rbind(
+  response_nonzero,
+  response_zero_erosion,
+  response_zero_dilation
+)
+
+
+response_curve$boundary_direction <- factor(
+  response_curve$boundary_direction,
+  levels = direction_levels
+)
+
+
+response_curve <- response_curve[
+  order(
+    response_curve$growth_stage,
+    response_curve$index,
+    response_curve$subplot,
+    response_curve$boundary_direction,
+    response_curve$delta_mask_area_pct
+  ),
+]
+
+
+pS2 <- ggplot(
+  response_curve,
+  
+  aes(
+    x =
+      delta_mask_area_pct,
+    
+    y =
+      delta_index_pct,
+    
+    group =
+      interaction(
+        subplot,
+        boundary_direction
+      ),
+    
+    linetype =
+      boundary_direction,
+    
+    shape =
+      subplot
+  )
+) +
+  
+  geom_hline(
+    yintercept = 0,
+    linewidth = 0.25
+  ) +
+  
+  geom_vline(
+    xintercept = 0,
+    linewidth = 0.25
+  ) +
+  
+  geom_line(
+    linewidth = 0.38,
+    alpha = 0.60
+  ) +
+  
+  geom_point(
+    size = 1.45,
+    alpha = 0.78
+  ) +
+  
+  facet_grid(
+    index ~ growth_stage,
+    scales = "free"
+  ) +
+  
+  scale_shape_manual(
+    values = subplot_shapes,
+    breaks = subplot_levels,
+    name = "Plot"
+  ) +
+  
+  labs(
+    x =
+      "Relative change in segmented-mask area (%)",
+    
+    y =
+      "Relative change in vegetation index (%)",
+    
+    linetype =
+      "Boundary direction"
+  ) +
+  
+  theme_publication
+
+
+figureS2_file <- file.path(
+  figure_root,
+  "Figure_S2_directional_boundary_response_curves.png"
+)
+
+
+ggsave(
+  filename = figureS2_file,
+  plot = pS2,
+  width = 11.8,
+  height = 7.3,
+  units = "in",
+  dpi = 600,
+  bg = "white"
+)
+
+
+# ------------------------------------------------------------
+# 10. FINAL QA REPORT
+# ------------------------------------------------------------
+
+median_asymmetry <- median(
+  direction$directional_asymmetry_pct,
+  na.rm = TRUE
+)
+
+
+max_asymmetry <- max(
+  direction$directional_asymmetry_pct,
+  na.rm = TRUE
+)
+
+
+cat("\n")
+cat("====================================================\n")
+cat("FINAL BOUNDARY-SENSITIVITY FIGURES COMPLETED\n")
+cat("====================================================\n")
+
+
+cat(
+  "Main figures: 2\n"
+)
+
+
+cat(
+  "Supplementary figures: 2\n"
+)
+
+
+cat(
+  "Combined-beta figure: intentionally not exported.\n"
+)
+
+
+cat(
+  "Median directional asymmetry: ",
+  sprintf(
+    "%.2f%%",
+    median_asymmetry
+  ),
+  "\n",
+  sep = ""
+)
+
+
+cat(
+  "Maximum directional asymmetry: ",
+  sprintf(
+    "%.2f%%",
+    max_asymmetry
+  ),
+  "\n",
+  sep = ""
+)
+
+
+cat("\nOutputs:\n")
+
+
+output_files <- c(
+  figure6_file,
+  figure7_file,
+  figureS1_file,
+  figureS2_file
+)
+
+
+for (f in output_files) {
+  
+  cat(
+    f,
+    "\n"
+  )
+}
+
+
+cat("\n")
+
+
+cat(
+  "No titles/subtitles are embedded in the image files.\n"
+)
+
+
+cat(
+  "No inferential significance tests are displayed.\n"
+)
+
+
+cat(
+  "P1-P5 remain visible as the five spatial observational units.\n"
+)
+
+
+# ============================================================
+# END
+# ============================================================
