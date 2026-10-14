@@ -148,7 +148,7 @@ if (!file.exists(response_file)) {
   stop(
     "Missing file:\n",
     response_file,
-    "\nRun scripts/11_normalized_boundary_sensitivity.R first."
+    "\nRun scripts/04_normalized_boundary_sensitivity.R first."
   )
 }
 
@@ -156,7 +156,7 @@ if (!file.exists(beta_file)) {
   stop(
     "Missing file:\n",
     beta_file,
-    "\nRun scripts/11_normalized_boundary_sensitivity.R first."
+    "\nRun scripts/04_normalized_boundary_sensitivity.R first."
   )
 }
 

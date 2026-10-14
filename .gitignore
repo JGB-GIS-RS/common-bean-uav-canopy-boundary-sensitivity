@@ -3,12 +3,16 @@
 .RData
 .Ruserdata
 
-# renv local libraries and transient state
+# Local R package libraries and transient state
 renv/library/
 renv/staging/
 renv/python/
 renv/sandbox/
 
-# Large local spatial inputs and generated figures
+# Large spatial inputs are not publicly distributed.
 data/spatial/
+data/raw/*
+!data/raw/.gitkeep
+
+# Generated graphics and supplementary PDF are regenerated from scripts.
 figures/

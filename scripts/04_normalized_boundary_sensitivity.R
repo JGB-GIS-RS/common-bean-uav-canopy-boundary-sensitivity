@@ -125,7 +125,7 @@ if (!file.exists(spectral_file)) {
   stop(
     "Missing file:\n",
     spectral_file,
-    "\nRun scripts/09_boundary_perturbation.R first."
+    "\nRun scripts/02_boundary_perturbation.R first."
   )
 }
 
@@ -133,7 +133,7 @@ if (!file.exists(geometry_file)) {
   stop(
     "Missing file:\n",
     geometry_file,
-    "\nRun scripts/09_boundary_perturbation.R first."
+    "\nRun scripts/02_boundary_perturbation.R first."
   )
 }
 

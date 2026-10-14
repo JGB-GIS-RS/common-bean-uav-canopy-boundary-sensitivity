@@ -1,80 +1,91 @@
-# Reproducibility
+# Reproducibility guide — corrected WDRVI α = 0.1
 
-This document describes how to reproduce the computational results of the current canopy-boundary sensitivity manuscript.
+This document distinguishes **analytical reproduction from the 24 tracked CSVs** from **full spatial regeneration**, which requires large GeoTIFF and GeoPackage inputs not hosted in this repository.
 
-## 1. Restore the R environment
+## 1. Working environment
 
-From the repository root:
+The original recorded R environment is described by `renv.lock` and `sessionInfo.txt`. Open the repository's `common-bean-uav-canopy-boundary-sensitivity.Rproj` in RStudio. Alternatively, set the R working directory to the repository root.
 
 ```r
-install.packages("renv")
+install.packages("renv") # only if needed
 renv::restore()
 ```
 
-The authoritative package record is `renv.lock`. The captured runtime is R 4.4.1 on Windows 11.
+Scripts search upward for a directory containing `scripts/` and `data/raw/`. The otherwise empty `data/raw/` directory is retained in a Git clone through `data/raw/.gitkeep`. All script paths are relative, not machine-specific.
 
-## 2. Repository-root detection
+## 2. Analytical reproduction from the tracked CSVs (no original rasters)
 
-Current-manuscript scripts detect the repository root using the presence of both `renv.lock` and the `scripts/` directory. They do not depend on a machine-specific absolute path.
-
-## 3. Reproduce Figure 4 from tracked baseline data
+The published CSVs already contain the pixel-extraction and perturbation-level observations for WDRVI α = 0.1. Execute:
 
 ```r
-source("scripts/05_figure_4_baseline_multitemporal_context.R")
+source("scripts/04_normalized_boundary_sensitivity.R")
+source("scripts/05_robustness_analysis.R")
+source("scripts/07_figure_4_baseline_context.R")
+source("scripts/08_figure_5_geometric_consequences.R")
+source("scripts/09_figures_6_7_and_supplement.R")
 ```
 
-Input: `derived/canopy_summary_by_plot.csv`
+Scripts 04 and 05 recalculate the normalized and directional sensitivity summaries and robustness diagnostics from previously derived observations. Scripts 07–09 produce Figure 4, Figure 5, Figure 6, Figure 7, Figure S1, Figure S2, and a two-page vector `Supplementary_Materials.pdf`.
 
-Output: `figures/Figure_4_baseline_multitemporal_context.png`
+Generated graphics are written under `figures/` and `figures/boundary_sensitivity/`, which are intentionally untracked. They may be regenerated from the released tables without original UAV photographs.
 
-## 4. Reproduce the analysis from tracked derived tables
+The Figure 3 R6 spatial-composite script (`scripts/06_figure_3_boundary_perturbation.R`) requires the corresponding original NDVI raster and segmented-canopy GeoPackage.
 
-```r
-source("scripts/11_normalized_boundary_sensitivity.R")
-source("scripts/12_robustness_analysis.R")
-source("scripts/14_figure_5_geometric_consequences_boundary_perturbation.R")
-source("scripts/13_boundary_sensitivity_figures.R")
+## 3. Full spatial regeneration from original inputs
+
+Populate these local-only directories with the canopy polygon masks and NDVI, MSAVI and **corrected α = 0.1 WDRVI** rasters:
+
+```text
+data/raw/V4/    canopy_20240907.gpkg ndvi_20240907.tif msavi_20240907.tif wdrvi_20240907.tif
+data/raw/R5/    canopy_20240914.gpkg ndvi_20240914.tif msavi_20240914.tif wdrvi_20240914.tif
+data/raw/R6/    canopy_20241002.gpkg ndvi_20241002.tif msavi_20241002.tif wdrvi_20241002.tif
+data/raw/R7/    canopy_20241009.gpkg ndvi_20241009.tif msavi_20241009.tif wdrvi_20241009.tif
+data/raw/R8/    canopy_20241016.gpkg ndvi_20241016.tif msavi_20241016.tif wdrvi_20241016.tif
 ```
 
-This reproduces the normalized response tables, direction-specific beta estimates, robustness diagnostics, Figure 5, Figure 6, Figure 7, Figure S1, and Figure S2. Figure 7 uses the tracked `derived/radial_background/radial_ring_observations.csv`.
-
-## 5. Full spatial regeneration
-
-Create local `data/spatial/flight01` through `flight05` directories and supply the vector/raster inputs documented in Scripts 00, 01, 09, and 10.
-
-Then run:
+Then run all nine scripts in the specified order:
 
 ```r
-source("scripts/00_build_canopy_geopackages.R")
 source("scripts/01_extract_canopy_statistics.R")
-source("scripts/09_boundary_perturbation.R")
-source("scripts/10_radial_background_analysis.R")
-source("scripts/11_normalized_boundary_sensitivity.R")
-source("scripts/12_robustness_analysis.R")
-source("scripts/14_figure_5_geometric_consequences_boundary_perturbation.R")
-source("scripts/13_boundary_sensitivity_figures.R")
+source("scripts/02_boundary_perturbation.R")
+source("scripts/03_radial_background_analysis.R")
+source("scripts/04_normalized_boundary_sensitivity.R")
+source("scripts/05_robustness_analysis.R")
+source("scripts/06_figure_3_boundary_perturbation.R")
+source("scripts/07_figure_4_baseline_context.R")
+source("scripts/08_figure_5_geometric_consequences.R")
+source("scripts/09_figures_6_7_and_supplement.R")
 ```
 
-Script 09 performs a baseline-reproduction QA against `derived/canopy_summary_by_plot.csv`.
+The first three scripts read the local spatial input and overwrite corresponding derived CSVs. Do not run them without the correct raster/mask inputs. The baseline reproduction check must give an absolute difference close to floating-point precision.
 
-## 6. Analytical hierarchy
+## 4. Published analysis targets
 
-Primary manuscript metrics:
-- `|beta_erosion|`
-- `|beta_dilation|`
+| Check | Value |
+|---|---:|
+| Baseline plot-stage rows | 25 |
+| Plot-stage-index baseline rows | 75 |
+| Perturbed spectral rows | 525 |
+| Geometry QA rows | 175 |
+| Directional beta combinations | 75 |
+| Both erosion and dilation coefficients negative | 72 of 75 |
+| Ring observations | 300 |
+| Radial profiles with outer ring lower than inner | 75 of 75 |
+| Monotonic decreasing radial profiles | 67 of 75 |
+| Median directional asymmetry | 35.01% |
+| Maximum directional asymmetry | 96.42% |
+| Maximum baseline mean reproduction error | 4.44×10⁻¹⁶ |
 
-The combined beta estimated jointly from erosion and dilation is a supporting diagnostic. Perturbation levels are deterministic transformations, not experimental replicates. P1–P5 are the five spatial observational units. No inferential p-values or confidence intervals are generated.
+See [validation](validation_alpha01.md) for stage-specific WDRVI and robustness results.
 
-## 7. Tracked products
+## 5. Interpretation and scope
 
-- `derived/canopy_summary_by_plot.csv`: 25 baseline plot × acquisition records.
-- `derived/boundary_sensitivity/`: perturbation observations, geometry QA, normalized responses, direction-specific sensitivity, and robustness outputs.
-- `derived/radial_background/`: ring observations and radial-gradient summaries for 0–5, 5–10, 10–15, and 15–20 cm.
+The primary coefficients are fitted **separately for erosion and dilation** as through-origin regressions of relative vegetation-index change against effective mask-area change. The combined-direction β files are supporting diagnostics only. Relative spectral changes are normalized by `|VI_0|`; results can be amplified for a near-zero baseline index.
 
-## 8. Large-file policy
+Five plots at distinct N rates are not replicated N treatments. The five flights are repeated observations, and perturbations/radial rings do not increase the biological sample size. No causal fertilizer-response or inferential significance claims are warranted.
 
-Raw UAV photographs, full orthomosaics, and analysis GeoTIFF/GeoPackage inputs are not tracked in GitHub. The compact analysis-ready tables needed to reproduce the reported numerical findings are tracked.
+## 6. Provenance and licensing
 
-## 9. Figures 1–3
+The original 2024 spatial inputs and original UAV photography are excluded from Git because of their size. Therefore, a clean clone does not reproduce the **upstream radiometric calibration, image mosaicking, or pixel extraction** unless those inputs are separately supplied. It does support analytical reproduction from the released numerical tables.
 
-Figures 1 and 2 are cartographic/schematic composites. Figure 3 is an illustrative R6 spatial composite. Their provenance is documented in `docs/figure_provenance.md`.
+Figure 1 is a cartographic composite; Figure 2 a methodological schematic. Figure 3 requires original R6 spatial data. See [figure provenance](figure_provenance.md). Earlier nitrogen/yield work is archived under `legacy_previous_manuscript/` and is separate from the present sensitivity analysis.

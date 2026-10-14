@@ -1,20 +1,29 @@
-# Baseline Canopy Data Dictionary
+# Baseline Canopy Data Dictionary (corrected WDRVI, α = 0.1)
 
-This document describes `derived/canopy_summary_by_plot.csv`, the 25-row baseline canopy table used by the current manuscript.
+The tracked table `derived/canopy_summary_by_subplot.csv` contains **25 rows** (five fixed plots × five UAV acquisitions), one row per `subplot × growth_stage`.
 
-| Variable | Type | Unit / format | Description |
-|---|---|---|---|
-| `flight` | Integer | 1–5 | Sequential UAV acquisition number. |
-| `date` | Date | YYYY-MM-DD | UAV acquisition date. |
-| `growth_stage` | Categorical | V4, R5, R6, R7, R8 | Observed common-bean growth stage. |
-| `plot` | Categorical | P1–P5 | Spatial observational unit. |
-| `N_rate_kg_ha` | Numeric | kg N ha⁻¹ | Agronomic N-rate context; not used for causal treatment inference in the current manuscript. |
-| `canopy_area_m2` | Numeric | m² | Total projected segmented-canopy area within the plot. |
-| `canopy_polygon_count` | Integer | count | Number of segmented canopy objects; not a plant count. |
-| `NDVI_mean`, `NDVI_median`, `NDVI_sd` | Numeric | dimensionless | Baseline NDVI summaries within the original canopy mask. |
-| `MSAVI_mean`, `MSAVI_median`, `MSAVI_sd` | Numeric | dimensionless | Baseline MSAVI summaries within the original canopy mask. |
-| `WDRVI_mean`, `WDRVI_median`, `WDRVI_sd` | Numeric | dimensionless | Baseline WDRVI summaries within the original canopy mask. |
+| Field | Units/type | Meaning |
+|---|---|---|
+| `flight` | integer 1–5 | Chronological acquisition number |
+| `date` | YYYY-MM-DD | Acquisition date |
+| `growth_stage` | V4, R5, R6, R7, R8 | Observed crop development stage (coincides with a single acquisition date) |
+| `subplot` | P1–P5 | Fixed spatial observational unit, not an independent N-treatment replicate |
+| `N_rate_kg_ha` | kg N ha⁻¹ | Agronomic context only (P1–P5: 0, 100, 200, 300, 400) |
+| `canopy_area_m2` | m² | Projected area of the original segmented canopy mask |
+| `canopy_polygon_count` | integer | Number of original canopy polygon objects; not a plant count |
+| `NDVI_mean`, `NDVI_median`, `NDVI_sd` | dimensionless | NDVI summaries across raster cells selected by the original mask |
+| `MSAVI_mean`, `MSAVI_median`, `MSAVI_sd` | dimensionless | MSAVI summaries across raster cells selected by the original mask |
+| `WDRVI_mean`, `WDRVI_median`, `WDRVI_sd` | dimensionless | **Corrected WDRVI using α = 0.1** |
 
-The table has one row per `plot × UAV acquisition`: 5 plots × 5 acquisitions = 25 rows. These are longitudinal observations of the same five spatial units, not 25 independent experimental replicates.
+The underlying indices are pixel-level data. For a fixed α, pixel WDRVI is a nonlinear monotonic transform of pixel NDVI; their spatial means are not related by direct application of that nonlinear transform to the mean NDVI.
 
-The table supplies the baseline (`d = 0`) context shown in Figure 4 and the reference for baseline-reproduction QA in Script 09. See `docs/boundary_sensitivity_data_dictionary.md` for the perturbation, directional-sensitivity, robustness, and radial tables.
+Additional tables:
+
+- `derived/canopy_statistics_by_subplot_index.csv`: 75 plot × acquisition × index baseline summaries, including index-specific extraction diagnostics.
+- `derived/qa_spatial_extraction.csv`: 25 spatial and raster-support QA records.
+- `derived/boundary_sensitivity/`: 17 perturbation, sensitivity, directional robustness, and QA tables.
+- `derived/radial_background/`: 4 radial-analysis tables.
+
+`subplot` is the authoritative column name in these current CSV files; older documentation using `plot` describes superseded exports. The repeated UAV acquisitions and deterministic perturbations are not independent experimental replicates.
+
+Refer to [boundary sensitivity dictionary](boundary_sensitivity_data_dictionary.md) for coefficient and perturbation definitions.

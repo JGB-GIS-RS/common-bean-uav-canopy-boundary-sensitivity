@@ -1,203 +1,105 @@
 # Direction-Dependent Sensitivity of UAV-Derived Vegetation Indices to Canopy Boundary Definition in Common Bean
 
-This repository contains the analysis-ready data, R code, quality-assurance outputs, and reproducible computational environment supporting the manuscript:
+Reproducible analysis-ready data and R scripts for the common-bean UAV canopy-boundary sensitivity manuscript. This repository concerns **spatial support and directional boundary perturbations**, not causal effects of nitrogen fertilization.
 
-**Direction-Dependent Sensitivity of UAV-Derived Vegetation Indices to Canopy Boundary Definition in Common Bean**
+## Study and statistical scope
 
-The study quantifies how controlled inward and outward modifications of segmented common-bean canopy boundaries affect UAV-derived NDVI, MSAVI, and WDRVI estimates across five UAV acquisitions from V4 to R8.
+- Five fixed spatial observational units (P1–P5) in the 2024 common-bean crop cycle, Quindío, Colombia; five UAV acquisitions (V4, R5, R6, R7, R8).
+- Each plot had one N-rate context (0, 100, 200, 300, 400 kg N ha⁻¹), without independently replicated N treatments. **Do not interpret these as treatment replicates or infer causal N effects.**
+- Vegetation indices: NDVI, MSAVI, and WDRVI **with α = 0.1**.
+- Controlled canopy-mask erosion and dilation at −3, −2, −1, 0, +1, +2, +3 cm; directional coefficients are fit separately.
+- Primary normalized metric: `ΔA (%) = 100 (A_d − A_0)/A_0`; `ΔVI (%) = 100 (VI_d − VI_0)/|VI_0|`; slope `β` through the origin in each direction; reported magnitude `|β|`.
+- Near-zero `VI_0` can amplify **relative** WDRVI coefficients. A large relative coefficient is not necessarily a large absolute-index change. Within one plot, flight and index, the common baseline normalization cancels in the ratio of erosion/dilation magnitudes and in directional asymmetry.
+- Perturbations and radial rings are **dependent deterministic/spatial summaries**, not independent biological replicates. Analyses are descriptive; no inferential hypothesis testing is claimed.
 
-> **Repository-name note.** The repository name `common-bean-uav-nitrogen-gradient` is retained for continuity with the original 2024 field dataset. Nitrogen rate is retained as agronomic context only. The current manuscript does not estimate causal nitrogen effects, treatment effects, or a fertilizer dose-response relationship.
+## Corrected WDRVI dataset
 
-## Scientific scope
+This version contains the WDRVI = (α·NIR − Red)/(α·NIR + Red) products corresponding to **α = 0.1**, as verified in the local source-raster analysis and regenerated analysis tables. The previous WDRVI tables have been replaced.
 
-The current manuscript evaluates:
+| Stage | Date (2024) | Mean WDRVI over P1–P5 |
+|---|---|---:|
+| V4 | 07 Sep | 0.014933 |
+| R5 | 14 Sep | 0.107993 |
+| R6 | 02 Oct | 0.506431 |
+| R7 | 09 Oct | −0.075981 |
+| R8 | 16 Oct | 0.230163 |
 
-1. geometric consequences of controlled canopy-boundary perturbations from −3 to +3 cm;
-2. direction-specific normalized sensitivity of NDVI, MSAVI, and WDRVI to inward erosion and outward dilation;
-3. acquisition- and index-dependent changes in sensitivity;
-4. radial spectral structure in the adjacent non-canopy environment; and
-5. internal robustness to perturbation-range choice and sequential omission of individual plots.
+Quality-assurance checks: 525 spectral observations; 175 mask-geometry observations; 75 directional plot–stage–index combinations, with both slopes negative in 72; 300 external-ring measurements; all 75 radial profiles lower in the outermost than innermost ring, 67 strictly monotonic. The median directional asymmetry is 35.01% (maximum 96.42%). Details: [validation report](docs/validation_alpha01.md).
 
-Boundary perturbations are deterministic transformations of the same baseline masks. They are not experimental replicates and are not interpreted as empirical estimates of segmentation error.
-
-## Study design
-
-Five adjacent 40 m² plots (P1–P5) were observed during the 2024 common-bean crop cycle. The plots had N-rate contexts of 0, 100, 200, 300, and 400 kg N ha⁻¹ for P1–P5, respectively. Because there was one plot per N rate, P1–P5 are treated as **spatial observational units**, not as independently replicated N treatments.
-
-### UAV acquisitions
-
-| Flight | Date | Stage | Days after N application |
-|---|---|---|---:|
-| 1 | 2024-09-07 | V4 | 8 |
-| 2 | 2024-09-14 | R5 | 15 |
-| 3 | 2024-10-02 | R6 | 33 |
-| 4 | 2024-10-09 | R7 | 40 |
-| 5 | 2024-10-16 | R8 | 47 |
-
-## Repository structure
+## Project layout
 
 ```text
-.
-├── derived/
-│   ├── canopy_statistics_by_plot_index.csv
-│   ├── canopy_summary_by_plot.csv
-│   ├── qa_canopy_geopackages.csv
-│   ├── qa_spatial_extraction.csv
-│   ├── boundary_sensitivity/
-│   │   └── [17 tracked analysis/QA tables]
-│   └── radial_background/
-│       └── [4 tracked radial-analysis tables]
-├── scripts/
-│   ├── 00_build_canopy_geopackages.R
-│   ├── 01_extract_canopy_statistics.R
-│   ├── 05_figure_4_baseline_multitemporal_context.R
-│   ├── 09_boundary_perturbation.R
-│   ├── 10_radial_background_analysis.R
-│   ├── 11_normalized_boundary_sensitivity.R
-│   ├── 12_robustness_analysis.R
-│   ├── 13_boundary_sensitivity_figures.R
-│   └── 14_figure_5_geometric_consequences_boundary_perturbation.R
-├── docs/
-│   ├── data_dictionary.md
-│   ├── boundary_sensitivity_data_dictionary.md
-│   ├── figure_provenance.md
-│   └── reproducibility.md
-├── legacy_previous_manuscript/
-│   ├── README.md
-│   ├── scripts/
-│   ├── data/
-│   ├── derived/
-│   └── docs/
-├── renv.lock
-└── sessionInfo.txt
+data/raw/                                  # local-only spatial inputs; not distributed
+derived/
+  canopy_statistics_by_subplot_index.csv
+  canopy_summary_by_subplot.csv           # 25 plot × acquisition records
+  qa_spatial_extraction.csv
+  boundary_sensitivity/                   # 17 numerical and QA tables
+  radial_background/                      # 4 ring/gradient tables
+scripts/
+  01_extract_canopy_statistics.R
+  02_boundary_perturbation.R
+  03_radial_background_analysis.R
+  04_normalized_boundary_sensitivity.R
+  05_robustness_analysis.R
+  06_figure_3_boundary_perturbation.R
+  07_figure_4_baseline_context.R
+  08_figure_5_geometric_consequences.R
+  09_figures_6_7_and_supplement.R
+docs/
+  data_dictionary.md
+  boundary_sensitivity_data_dictionary.md
+  reproducibility.md
+  figure_provenance.md
+  validation_alpha01.md
+legacy_previous_manuscript/                # separate earlier N/yield work
+renv.lock
+sessionInfo.txt
 ```
 
-Large local spatial inputs are intentionally excluded from version control under `data/spatial/`.
+## Reproduce the figures from the tracked analysis tables
 
-## Reproducible workflow
-
-### Baseline canopy products
-
-```text
-segmented canopy polygons + VI rasters
-        ↓
-00_build_canopy_geopackages.R
-        ↓
-01_extract_canopy_statistics.R
-        ↓
-derived/canopy_summary_by_plot.csv
-        ↓
-05_figure_4_baseline_multitemporal_context.R
-        ↓
-Figure 4
-```
-
-### Boundary-sensitivity analysis
-
-```text
-baseline canopy masks + NDVI/MSAVI/WDRVI rasters
-        ↓
-09_boundary_perturbation.R
-        ├── boundary_perturbation_observations.csv
-        ├── boundary_geometry_qa.csv
-        ├── crossplot_overlap_qa.csv
-        └── baseline_reproduction_check.csv
-        ↓
-11_normalized_boundary_sensitivity.R
-        ↓
-12_robustness_analysis.R
-        ↓
-13_boundary_sensitivity_figures.R
-        ├── Figure 6
-        ├── Figure S1
-        └── Figure S2
-
-09_boundary_perturbation.R
-        ↓
-14_figure_5_geometric_consequences_boundary_perturbation.R
-        ↓
-Figure 5
-
-baseline canopy masks + VI rasters
-        ↓
-10_radial_background_analysis.R
-        ↓
-13_boundary_sensitivity_figures.R
-        ↓
-Figure 7
-```
-
-## Figure-to-code provenance
-
-| Manuscript item | Repository source |
-|---|---|
-| Figure 1 | Cartographic/orthomosaic composite; see `docs/figure_provenance.md` |
-| Figure 2 | Methodological schematic; see `docs/figure_provenance.md` |
-| Figure 3 | Illustrative R6 spatial composite; see `docs/figure_provenance.md` |
-| Figure 4 | `scripts/05_figure_4_baseline_multitemporal_context.R` |
-| Figure 5 | `scripts/14_figure_5_geometric_consequences_boundary_perturbation.R` |
-| Figure 6 | `scripts/13_boundary_sensitivity_figures.R` |
-| Figure 7 | `scripts/13_boundary_sensitivity_figures.R` |
-| Figure S1 | `scripts/13_boundary_sensitivity_figures.R` |
-| Figure S2 | `scripts/13_boundary_sensitivity_figures.R` |
-
-## Analysis-ready data
-
-The tracked tables are sufficient to reproduce the manuscript's numerical sensitivity, robustness, radial, and figure-level summaries without the raw UAV photographs.
-
-Current baseline:
-- `derived/canopy_summary_by_plot.csv` — 25 plot × acquisition records used for Figure 4 and baseline QA.
-
-Key sensitivity products:
-- `derived/boundary_sensitivity/boundary_perturbation_observations.csv`
-- `derived/boundary_sensitivity/boundary_geometry_qa.csv`
-- `derived/boundary_sensitivity/normalized_boundary_response_observations.csv`
-- `derived/boundary_sensitivity/directional_beta_by_plot.csv`
-- `derived/boundary_sensitivity/directional_robustness_range_summary.csv`
-- `derived/boundary_sensitivity/directional_robustness_leave_one_subplot_out_summary.csv`
-- `derived/radial_background/radial_ring_observations.csv`
-- `derived/radial_background/radial_gradient_by_plot.csv`
-
-See `docs/data_dictionary.md` and `docs/boundary_sensitivity_data_dictionary.md`.
-
-## Reproducibility levels
-
-**Analytical reproduction from a clean clone.** Tracked CSV files reproduce the numerical sensitivity, robustness, radial summaries, and Figures 4–7/S1–S2 using Scripts 05 and 11–14.
-
-**Full spatial regeneration.** Scripts 00, 01, 09, and 10 additionally require local vector/raster inputs under `data/spatial/flight01` through `flight05`. These large inputs are not tracked in GitHub.
-
-## Statistical scope
-
-- P1–P5 are the five available spatial observational units.
-- Boundary perturbations are deterministic transformations and are not independent replicates.
-- UAV acquisitions are repeated observations of the same spatial units.
-- N rate is agronomic context only.
-- No p-values, confidence intervals, or analysis-of-variance comparisons are used for the boundary-sensitivity or radial analyses.
-- Primary sensitivity metrics are direction-specific `|beta_erosion|` and `|beta_dilation|`.
-- Plot-level values are summarized with medians and interquartile ranges.
-- Internal robustness is assessed using the 1–2 versus 1–3 cm perturbation range and leave-one-plot-out diagnostics.
-
-## Reproducible R environment
-
-The repository includes `renv.lock` and `sessionInfo.txt`. The recorded environment is R 4.4.1 on Windows 11, including `terra` 1.8-54, `sf` 1.0-21, `dplyr` 1.1.4, `ggplot2` 3.5.2, `patchwork` 1.3.1, and `renv` 1.2.4.
-
-Restore with:
+Open the included RStudio project, or set your working directory to the repository root. The tracked `data/raw/.gitkeep` allows the project-root detector to find a clean clone without distributing original spatial data.
 
 ```r
-install.packages("renv")
+install.packages("renv") # if needed
 renv::restore()
+source("scripts/04_normalized_boundary_sensitivity.R")
+source("scripts/05_robustness_analysis.R")
+source("scripts/07_figure_4_baseline_context.R")
+source("scripts/08_figure_5_geometric_consequences.R")
+source("scripts/09_figures_6_7_and_supplement.R")
 ```
 
-See `docs/reproducibility.md` for execution details.
+Outputs include Figure 4, Figure 5, Figures 6–7, Figures S1–S2, and the vector `Supplementary_Materials.pdf`. Figures are written under `figures/` and `figures/boundary_sensitivity/`; generated graphics are ignored by Git.
 
-## Legacy material
+## Regenerate the complete spatial extraction (local inputs required)
 
-The earlier harvest/yield-oriented master dataset, field-harvest table, data dictionary, scripts, and exploratory outputs are preserved under `legacy_previous_manuscript/` for provenance. They do **not** support the claims or figures of the current boundary-sensitivity manuscript.
+Add the following per-stage inputs to `data/raw/<STAGE>/`:
 
-## Licenses
+| Folder | Acquisition basename | Required files |
+|---|---|---|
+| `V4/` | `20240907` | `canopy_*.gpkg`, `ndvi_*.tif`, `msavi_*.tif`, `wdrvi_*.tif` |
+| `R5/` | `20240914` | same four files |
+| `R6/` | `20241002` | same four files |
+| `R7/` | `20241009` | same four files |
+| `R8/` | `20241016` | same four files |
 
-R code is released under the MIT License. Data tables and documentation are released under CC BY 4.0 unless otherwise stated.
+Run scripts 01–09 in numerical order. Figure 3 (R6 baseline mask and spectral support) specifically requires R6 canopy polygons and NDVI raster. Full source rasters/GeoPackages are not publicly tracked due to size; the **24 analysis-ready CSVs are tracked** for numerical and most figure-level reproduction. See [reproducibility](docs/reproducibility.md) for details.
 
-## Citation
+## Figure-to-code mapping
 
-Bibliographic details and DOI for the associated manuscript will be added after publication.
+| Item | R source |
+|---|---|
+| Figure 1 | cartographic composite, see [provenance](docs/figure_provenance.md) |
+| Figure 2 | methodological schematic, see [provenance](docs/figure_provenance.md) |
+| Figure 3 | `scripts/06_figure_3_boundary_perturbation.R` (spatial input required) |
+| Figure 4 | `scripts/07_figure_4_baseline_context.R` |
+| Figure 5 | `scripts/08_figure_5_geometric_consequences.R` |
+| Figures 6–7 and S1–S2 | `scripts/09_figures_6_7_and_supplement.R` |
+
+## Reproducibility and provenance
+
+The tracked `renv.lock` and `sessionInfo.txt` document the recorded R environment; local reproducibility was tested in RStudio, but full independent clean-clone execution is not certified here. The previous N/yield-oriented study is preserved separately under `legacy_previous_manuscript/` and does **not** provide the WDRVI observations used for the present manuscript.
+
+R scripts: MIT License. Distributed data and documentation: CC BY 4.0 unless otherwise specified. Final manuscript citation/DOI to be added after publication.

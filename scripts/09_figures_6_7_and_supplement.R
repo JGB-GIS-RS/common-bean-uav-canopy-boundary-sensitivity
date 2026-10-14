@@ -172,7 +172,7 @@ if (length(
       missing_files,
       collapse = "\n"
     ),
-    "\n\nRun Scripts 09-12 before Script 13."
+    "\n\nRun Scripts 02-05 to regenerate the required derived tables."
   )
 }
 
