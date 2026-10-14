@@ -38,6 +38,7 @@ rm(list = ls())
 library(readr)
 library(dplyr)
 library(ggplot2)
+library(stringr)
 library(patchwork)
 library(grid)
 
@@ -56,10 +57,11 @@ find_project_root <- function(start = getwd()) {
 
   repeat {
 
-    has_lockfile <- file.exists(
+    has_data <- dir.exists(
       file.path(
         current,
-        "renv.lock"
+        "data",
+        "raw"
       )
     )
 
@@ -70,7 +72,7 @@ find_project_root <- function(start = getwd()) {
       )
     )
 
-    if (has_lockfile && has_scripts) {
+    if (has_data && has_scripts) {
       return(current)
     }
 
@@ -86,7 +88,7 @@ find_project_root <- function(start = getwd()) {
   stop(
     "Repository root could not be detected from working directory: ",
     normalizePath(start, winslash = "/", mustWork = TRUE),
-    "\nExpected a parent directory containing renv.lock and scripts/."
+    "\nExpected a parent directory containing both data/raw and scripts."
   )
 }
 

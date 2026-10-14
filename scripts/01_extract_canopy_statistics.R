@@ -8,21 +8,21 @@
 #
 # Inputs per flight
 # -----------------
-#   data/spatial/flightXX/ndvi_YYYYMMDD.tif
-#   data/spatial/flightXX/msavi_YYYYMMDD.tif
-#   data/spatial/flightXX/wdrvi_YYYYMMDD.tif
-#   data/spatial/flightXX/canopy_YYYYMMDD.gpkg
+#   data/raw/<stage>/ndvi_YYYYMMDD.tif
+#   data/raw/<stage>/msavi_YYYYMMDD.tif
+#   data/raw/<stage>/wdrvi_YYYYMMDD.tif
+#   data/raw/<stage>/canopy_YYYYMMDD.gpkg
 #
 # Outputs
 # -------
-#   derived/canopy_statistics_by_plot_index.csv
-#   derived/canopy_summary_by_plot.csv
+#   derived/canopy_statistics_by_subplot_index.csv
+#   derived/canopy_summary_by_subplot.csv
 #   derived/qa_spatial_extraction.csv
 #
 # Notes
 # -----
 # No input file is modified.
-# Expected working directory: repository root.
+# Run from the project root or any subdirectory. Original inputs are never modified.
 # ============================================================
 
 rm(list = ls())
@@ -44,10 +44,11 @@ find_project_root <- function(start = getwd()) {
 
   repeat {
 
-    has_lockfile <- file.exists(
+    has_data <- dir.exists(
       file.path(
         current,
-        "renv.lock"
+        "data",
+        "raw"
       )
     )
 
@@ -58,7 +59,7 @@ find_project_root <- function(start = getwd()) {
       )
     )
 
-    if (has_lockfile && has_scripts) {
+    if (has_data && has_scripts) {
       return(current)
     }
 
@@ -74,7 +75,7 @@ find_project_root <- function(start = getwd()) {
   stop(
     "Repository root could not be detected from working directory: ",
     normalizePath(start, winslash = "/", mustWork = TRUE),
-    "\nExpected a parent directory containing renv.lock and scripts/."
+    "\nExpected a parent directory containing both data/raw and scripts."
   )
 }
 
@@ -83,7 +84,7 @@ project_root <- find_project_root()
 spatial_root <- file.path(
   project_root,
   "data",
-  "spatial"
+  "raw"
 )
 
 derived_root <- file.path(
@@ -95,7 +96,7 @@ if (!dir.exists(spatial_root)) {
   stop(
     "Directory not found: ",
     spatial_root,
-    "\n\nExpected local spatial inputs under data/spatial/."
+    "\n\nOpen the RStudio project at the repository root."
   )
 }
 
@@ -113,11 +114,11 @@ if (!dir.exists(derived_root)) {
 flights <- data.frame(
   flight = 1:5,
   folder = c(
-    "flight01",
-    "flight02",
-    "flight03",
-    "flight04",
-    "flight05"
+    "V4",
+    "R5",
+    "R6",
+    "R7",
+    "R8"
   ),
   date = c(
     "2024-09-07",
@@ -407,7 +408,7 @@ for (i in seq_len(nrow(flights))) {
     "flight",
     "date",
     "growth_stage",
-    "plot",
+    "subplot",
     "N_rate_kg_ha",
     "canopy_object_id"
   )
@@ -422,7 +423,7 @@ for (i in seq_len(nrow(flights))) {
     )
   }
 
-  plots <- c(
+  subplots <- c(
     "P1",
     "P2",
     "P3",
@@ -430,16 +431,16 @@ for (i in seq_len(nrow(flights))) {
     "P5"
   )
 
-  for (plot in plots) {
+  for (subplot in subplots) {
 
     canopy <- canopy_all[
-      canopy_all$plot == plot,
+      canopy_all$subplot == subplot,
     ]
 
     if (nrow(canopy) == 0) {
       stop(
         "No canopy polygons found for ",
-        plot,
+        subplot,
         " in ",
         basename(
           gpkg_file
@@ -454,7 +455,7 @@ for (i in seq_len(nrow(flights))) {
     if (length(N_rate_value) != 1) {
       stop(
         "Multiple N rates detected for ",
-        plot,
+        subplot,
         " in ",
         basename(
           gpkg_file
@@ -466,7 +467,7 @@ for (i in seq_len(nrow(flights))) {
       canopy
     )
 
-    plot_results <- list()
+    subplot_results <- list()
 
     for (idx in names(rasters)) {
 
@@ -480,7 +481,7 @@ for (i in seq_len(nrow(flights))) {
           flight = flight_id,
           date = date_txt,
           growth_stage = growth_stage,
-          plot = plot,
+          subplot = subplot,
           N_rate_kg_ha = as.numeric(
             N_rate_value
           ),
@@ -493,26 +494,26 @@ for (i in seq_len(nrow(flights))) {
       )
 
       results[[k]] <- row
-      plot_results[[idx]] <- row
+      subplot_results[[idx]] <- row
       k <- k + 1
     }
 
     area_values <- sapply(
-      plot_results,
+      subplot_results,
       function(z) {
         z$canopy_area_m2
       }
     )
 
     coverage_values <- sapply(
-      plot_results,
+      subplot_results,
       function(z) {
         z$coverage_pct
       }
     )
 
     outside_values <- sapply(
-      plot_results,
+      subplot_results,
       function(z) {
         z$pct_outside_minus1_1
       }
@@ -522,7 +523,7 @@ for (i in seq_len(nrow(flights))) {
       flight = flight_id,
       date = date_txt,
       growth_stage = growth_stage,
-      plot = plot,
+      subplot = subplot,
       N_rate_kg_ha = as.numeric(
         N_rate_value
       ),
@@ -598,7 +599,7 @@ summary_25 <- data.frame(
   flight = ndvi$flight,
   date = ndvi$date,
   growth_stage = ndvi$growth_stage,
-  plot = ndvi$plot,
+  subplot = ndvi$subplot,
   N_rate_kg_ha = ndvi$N_rate_kg_ha,
   canopy_area_m2 = ndvi$canopy_area_m2,
   canopy_polygon_count =
@@ -668,7 +669,7 @@ write.csv(
   long_table,
   file.path(
     derived_root,
-    "canopy_statistics_by_plot_index.csv"
+    "canopy_statistics_by_subplot_index.csv"
   ),
   row.names = FALSE
 )
@@ -677,7 +678,7 @@ write.csv(
   summary_25,
   file.path(
     derived_root,
-    "canopy_summary_by_plot.csv"
+    "canopy_summary_by_subplot.csv"
   ),
   row.names = FALSE
 )

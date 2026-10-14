@@ -17,7 +17,7 @@
 #
 # Input
 # -----
-#   derived/canopy_summary_by_plot.csv
+#   derived/canopy_summary_by_subplot.csv
 #
 # Output
 # ------
@@ -63,9 +63,9 @@ library(ggplot2)
 library(patchwork)
 
 
-# ------------------------------------------------------------
-# 2. PROJECT PATHS
-# ------------------------------------------------------------
+# -----------------------------
+# Paths
+# -----------------------------
 
 find_project_root <- function(start = getwd()) {
 
@@ -77,10 +77,11 @@ find_project_root <- function(start = getwd()) {
 
   repeat {
 
-    has_lockfile <- file.exists(
+    has_data <- dir.exists(
       file.path(
         current,
-        "renv.lock"
+        "data",
+        "raw"
       )
     )
 
@@ -91,7 +92,7 @@ find_project_root <- function(start = getwd()) {
       )
     )
 
-    if (has_lockfile && has_scripts) {
+    if (has_data && has_scripts) {
       return(current)
     }
 
@@ -107,16 +108,16 @@ find_project_root <- function(start = getwd()) {
   stop(
     "Repository root could not be detected from working directory: ",
     normalizePath(start, winslash = "/", mustWork = TRUE),
-    "\nExpected a parent directory containing renv.lock and scripts/."
+    "\nExpected a parent directory containing both data/raw and scripts."
   )
 }
 
 project_root <- find_project_root()
 
-baseline_file <- file.path(
+input_file <- file.path(
   project_root,
   "derived",
-  "canopy_summary_by_plot.csv"
+  "canopy_summary_by_subplot.csv"
 )
 
 figure_root <- file.path(
@@ -124,19 +125,17 @@ figure_root <- file.path(
   "figures"
 )
 
-if (!file.exists(baseline_file)) {
-  
-  stop(
-    "Missing baseline canopy summary:\n",
-    baseline_file
-  )
-}
-
 if (!dir.exists(figure_root)) {
-  
   dir.create(
     figure_root,
     recursive = TRUE
+  )
+}
+
+if (!file.exists(input_file)) {
+  stop(
+    "Missing input file:\n",
+    input_file
   )
 }
 
@@ -146,7 +145,7 @@ if (!dir.exists(figure_root)) {
 # ------------------------------------------------------------
 
 d <- read.csv(
-  baseline_file,
+  input_file,
   stringsAsFactors = FALSE,
   check.names = FALSE
 )
