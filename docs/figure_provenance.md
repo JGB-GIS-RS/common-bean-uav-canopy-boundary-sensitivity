@@ -1,4 +1,4 @@
-# Figure provenance for corrected WDRVI α = 0.1
+# Figure provenance for the UAV canopy-boundary sensitivity study
 
 | Manuscript figure | Inputs and source | How to reproduce |
 |---|---|---|
@@ -14,6 +14,6 @@
 
 Script 09 also writes `figures/boundary_sensitivity/Supplementary_Materials.pdf` containing vector Figures S1 and S2 with captions. Graphic products under `figures/` are not tracked; generated quantitative figures can be recreated from the published analysis-ready data.
 
-**Figure 4, Figure 6, Figure 7, S1, and S2 incorporate the WDRVI values recalculated using α = 0.1.** Figure 3 illustrates NDVI, not WDRVI. Figure 5 depends on geometric changes rather than on an index.
+**WDRVI panels in Figures 4, 6, 7, S1 and S2 use α = 0.1**, consistent with the Methods. Figure 3 illustrates NDVI, not WDRVI. Figure 5 depends on geometric changes rather than on an index.
 
 The vertical axes of Figures 6 and 7 use index-specific scales. WDRVI responses near a baseline of zero are **relative normalized responses**, not proportional changes in reflectance or evidence of independent spectral corroboration of NDVI.

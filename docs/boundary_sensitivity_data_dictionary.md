@@ -1,6 +1,6 @@
 # Directional Boundary-Sensitivity and Radial Data Dictionary
 
-All tracked CSVs in this version were regenerated with **WDRVI α = 0.1**. Acquisition stage and plot refer to five repeated surveys of P1–P5. The `subplot` field identifies a spatial unit, not an N-treatment replicate.
+All published CSV tables use **WDRVI with α = 0.1**. Acquisition stage and plot refer to five repeated surveys of P1–P5. The `subplot` field identifies a spatial unit, not an N-treatment replicate.
 
 ## Variables and estimands
 

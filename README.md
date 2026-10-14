@@ -12,9 +12,9 @@ Reproducible analysis-ready data and R scripts for the common-bean UAV canopy-bo
 - Near-zero `VI_0` can amplify **relative** WDRVI coefficients. A large relative coefficient is not necessarily a large absolute-index change. Within one plot, flight and index, the common baseline normalization cancels in the ratio of erosion/dilation magnitudes and in directional asymmetry.
 - Perturbations and radial rings are **dependent deterministic/spatial summaries**, not independent biological replicates. Analyses are descriptive; no inferential hypothesis testing is claimed.
 
-## Corrected WDRVI dataset
+## Vegetation-index products and verification
 
-This version contains the WDRVI = (α·NIR − Red)/(α·NIR + Red) products corresponding to **α = 0.1**, as verified in the local source-raster analysis and regenerated analysis tables. The previous WDRVI tables have been replaced.
+The released WDRVI products use the formulation WDRVI = (α·NIR − Red)/(α·NIR + Red), with **α = 0.1**, throughout the five UAV acquisitions. The tables provide the canopy-level summaries and perturbation observations used in the manuscript.
 
 | Stage | Date (2024) | Mean WDRVI over P1–P5 |
 |---|---|---:|
@@ -24,7 +24,7 @@ This version contains the WDRVI = (α·NIR − Red)/(α·NIR + Red) products cor
 | R7 | 09 Oct | −0.075981 |
 | R8 | 16 Oct | 0.230163 |
 
-Quality-assurance checks: 525 spectral observations; 175 mask-geometry observations; 75 directional plot–stage–index combinations, with both slopes negative in 72; 300 external-ring measurements; all 75 radial profiles lower in the outermost than innermost ring, 67 strictly monotonic. The median directional asymmetry is 35.01% (maximum 96.42%). Details: [validation report](docs/validation_alpha01.md).
+Quality-assurance checks: 525 spectral observations; 175 mask-geometry observations; 75 directional plot–stage–index combinations, with both slopes negative in 72; 300 external-ring measurements; all 75 radial profiles lower in the outermost than innermost ring, 67 strictly monotonic. The median directional asymmetry is 35.01% (maximum 96.42%). Details: [analysis validation report](docs/validation.md).
 
 ## Project layout
 
@@ -51,7 +51,7 @@ docs/
   boundary_sensitivity_data_dictionary.md
   reproducibility.md
   figure_provenance.md
-  validation_alpha01.md
+  validation.md
 legacy_previous_manuscript/                # separate earlier N/yield work
 renv.lock
 sessionInfo.txt
@@ -100,6 +100,6 @@ Run scripts 01–09 in numerical order. Figure 3 (R6 baseline mask and spectral 
 
 ## Reproducibility and provenance
 
-The tracked `renv.lock` and `sessionInfo.txt` document the recorded R environment; local reproducibility was tested in RStudio, but full independent clean-clone execution is not certified here. The previous N/yield-oriented study is preserved separately under `legacy_previous_manuscript/` and does **not** provide the WDRVI observations used for the present manuscript.
+The tracked `renv.lock` and `sessionInfo.txt` document the recorded R environment; local reproducibility was tested in RStudio, but full independent clean-clone execution is not certified here. A separate N/yield-oriented study is archived under `legacy_previous_manuscript/` and is not a source of the present study's vegetation-index observations.
 
 R scripts: MIT License. Distributed data and documentation: CC BY 4.0 unless otherwise specified. Final manuscript citation/DOI to be added after publication.

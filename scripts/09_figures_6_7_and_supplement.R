@@ -178,7 +178,7 @@ if (length(
 
 
 # ------------------------------------------------------------
-# Remove obsolete figures from previous versions
+# Clean matching output files before figure export
 # ------------------------------------------------------------
 
 obsolete_files <- c(

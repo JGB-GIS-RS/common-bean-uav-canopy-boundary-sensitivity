@@ -1,4 +1,4 @@
-# Baseline Canopy Data Dictionary (corrected WDRVI, α = 0.1)
+# Baseline canopy data dictionary — NDVI, MSAVI and WDRVI
 
 The tracked table `derived/canopy_summary_by_subplot.csv` contains **25 rows** (five fixed plots × five UAV acquisitions), one row per `subplot × growth_stage`.
 
@@ -13,7 +13,7 @@ The tracked table `derived/canopy_summary_by_subplot.csv` contains **25 rows** (
 | `canopy_polygon_count` | integer | Number of original canopy polygon objects; not a plant count |
 | `NDVI_mean`, `NDVI_median`, `NDVI_sd` | dimensionless | NDVI summaries across raster cells selected by the original mask |
 | `MSAVI_mean`, `MSAVI_median`, `MSAVI_sd` | dimensionless | MSAVI summaries across raster cells selected by the original mask |
-| `WDRVI_mean`, `WDRVI_median`, `WDRVI_sd` | dimensionless | **Corrected WDRVI using α = 0.1** |
+| `WDRVI_mean`, `WDRVI_median`, `WDRVI_sd` | dimensionless | WDRVI using α = 0.1 |
 
 The underlying indices are pixel-level data. For a fixed α, pixel WDRVI is a nonlinear monotonic transform of pixel NDVI; their spatial means are not related by direct application of that nonlinear transform to the mean NDVI.
 
@@ -24,6 +24,6 @@ Additional tables:
 - `derived/boundary_sensitivity/`: 17 perturbation, sensitivity, directional robustness, and QA tables.
 - `derived/radial_background/`: 4 radial-analysis tables.
 
-`subplot` is the authoritative column name in these current CSV files; older documentation using `plot` describes superseded exports. The repeated UAV acquisitions and deterministic perturbations are not independent experimental replicates.
+`subplot` is the plot identifier used throughout the published CSV files. The repeated UAV acquisitions and deterministic perturbations are not independent experimental replicates.
 
 Refer to [boundary sensitivity dictionary](boundary_sensitivity_data_dictionary.md) for coefficient and perturbation definitions.

@@ -1,6 +1,6 @@
-# Validation of the WDRVI α = 0.1 analytical regeneration
+# Analytical validation and quality assurance
 
-This document reports **descriptive checks performed on the corrected CSV exports** from the final local RStudio workflow. The 24 CSV files were uploaded to this repository after checking Git blob SHA-1 digests against the extracted `derived.rar` source; all matched exactly. The full upstream processing of raw UAV photographs is not included in the repository.
+This document summarizes descriptive quality-control checks for the **24 analysis-ready CSV tables** supporting the UAV canopy-boundary sensitivity study. The published tables were checked for file integrity and agreement with the RStudio analysis outputs. Original UAV photographs and upstream photogrammetric processing inputs are not distributed in this repository.
 
 ## Data coverage and baseline reproduction
 
@@ -53,7 +53,7 @@ Comparison of coefficient magnitudes from 1–2 cm versus the complete 1–3 cm 
 
 For leave-one-plot-out influence on the mean `|β|`, the median (across the 15 stage–index combinations) of each combination's maximum absolute change is **13.01%** for erosion and **9.09%** for dilation. The maximum across all combinations is **21.20%** for erosion (R6 WDRVI) and **24.68%** for dilation (R7 WDRVI).
 
-The original manuscript's previous erosion range-maximum value 19.54% was superseded by **22.37%**. This is not a statistical acceptance threshold or a population-level robustness statement.
+These descriptive checks are not statistical acceptance thresholds or evidence of population-level robustness.
 
 ## Non-canopy radial gradients
 

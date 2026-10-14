@@ -1,4 +1,4 @@
-# Reproducibility guide — corrected WDRVI α = 0.1
+# Reproducibility guide — UAV canopy-boundary sensitivity
 
 This document distinguishes **analytical reproduction from the 24 tracked CSVs** from **full spatial regeneration**, which requires large GeoTIFF and GeoPackage inputs not hosted in this repository.
 
@@ -25,7 +25,7 @@ source("scripts/08_figure_5_geometric_consequences.R")
 source("scripts/09_figures_6_7_and_supplement.R")
 ```
 
-Scripts 04 and 05 recalculate the normalized and directional sensitivity summaries and robustness diagnostics from previously derived observations. Scripts 07–09 produce Figure 4, Figure 5, Figure 6, Figure 7, Figure S1, Figure S2, and a two-page vector `Supplementary_Materials.pdf`.
+Scripts 04 and 05 calculate the normalized and directional sensitivity summaries and robustness diagnostics from the published perturbation observations. Scripts 07–09 produce Figure 4, Figure 5, Figure 6, Figure 7, Figure S1, Figure S2, and a two-page vector `Supplementary_Materials.pdf`.
 
 Generated graphics are written under `figures/` and `figures/boundary_sensitivity/`, which are intentionally untracked. They may be regenerated from the released tables without original UAV photographs.
 
@@ -33,7 +33,7 @@ The Figure 3 R6 spatial-composite script (`scripts/06_figure_3_boundary_perturba
 
 ## 3. Full spatial regeneration from original inputs
 
-Populate these local-only directories with the canopy polygon masks and NDVI, MSAVI and **corrected α = 0.1 WDRVI** rasters:
+Populate these local-only directories with the canopy polygon masks and NDVI, MSAVI and **WDRVI (α = 0.1)** rasters:
 
 ```text
 data/raw/V4/    canopy_20240907.gpkg ndvi_20240907.tif msavi_20240907.tif wdrvi_20240907.tif
@@ -76,7 +76,7 @@ The first three scripts read the local spatial input and overwrite corresponding
 | Maximum directional asymmetry | 96.42% |
 | Maximum baseline mean reproduction error | 4.44×10⁻¹⁶ |
 
-See [validation](validation_alpha01.md) for stage-specific WDRVI and robustness results.
+See [analytical validation](validation.md) for stage-specific WDRVI and robustness results.
 
 ## 5. Interpretation and scope
 
