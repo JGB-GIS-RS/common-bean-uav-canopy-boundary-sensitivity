@@ -1,4 +1,4 @@
-"flight","date","growth_stage","plot","N_rate_kg_ha","canopy_polygon_count","canopy_area_m2","canopy_area_range_m2","minimum_coverage_pct","maximum_coverage_pct","maximum_pct_outside_minus1_1"
+"flight","date","growth_stage","subplot","N_rate_kg_ha","canopy_polygon_count","canopy_area_m2","canopy_area_range_m2","minimum_coverage_pct","maximum_coverage_pct","maximum_pct_outside_minus1_1"
 1,"2024-09-07","V4","P1",0,39,1.24602086041099,0,99.9000008697157,100.038648421322,0
 1,"2024-09-07","V4","P2",100,36,0.956102668503795,0,99.4882067760946,99.6959363629279,0.0508750508750509
 1,"2024-09-07","V4","P3",200,34,0.732697469706883,0,99.1318192672392,100.180828289721,0
