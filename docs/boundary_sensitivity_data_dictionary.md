@@ -5,6 +5,7 @@ All published CSV tables use **WDRVI with α = 0.1**. Acquisition stage and plot
 ## Variables and estimands
 
 - `A_0`, `A_d`: projected segmented-mask area before and after a prescribed perturbation (m²).
+- Outward dilation keeps the complete original plot-level mask; only neighboring canopy in the **newly incorporated exterior** is excluded. Existing baseline overlaps between plots remain part of their respective baseline supports. The erosion and dilation mask series are nested with respect to their own plot baseline.
 - `ΔA_d (%) = 100(A_d − A_0)/A_0`: proportional change in effective vector area (negative erosion; positive dilation).
 - `VI_0`, `VI_d`: mean vegetation index over baseline and perturbed masks.
 - `ΔVI_d (%) = 100(VI_d − VI_0)/|VI_0|`: **relative** spectral response. A baseline index close to zero can amplify this percentage.
@@ -24,7 +25,7 @@ Under `derived/boundary_sensitivity/`:
 | `baseline_reproduction_check.csv` | 75 | Comparison of independently reconstructed baseline index means; maximum absolute difference 4.44×10⁻¹⁶ |
 | `boundary_geometry_qa.csv` | 175 | 5 stages × 5 plots × 7 perturbations, effective vector area and geometry diagnostics |
 | `boundary_perturbation_observations.csv` | 525 | 5 stages × 5 plots × 3 indices × 7 perturbations, corresponding raster-index summaries |
-| `crossplot_overlap_qa.csv` | 75 | Excluded overlap from outward dilation where neighboring plotted canopy would be incorporated |
+| `crossplot_overlap_qa.csv` | 75 | Overlap of the newly added exterior dilation area with neighboring plot canopy, excluded while preserving all pre-existing baseline-mask support |
 | `normalized_boundary_response_observations.csv` | 525 | Joined normalized geometric/spectral changes; Figure S2 |
 | `normalized_boundary_sensitivity_by_plot.csv` | 75 | Supporting **combined-direction**, through-origin β for all nonzero perturbations |
 | `normalized_boundary_sensitivity_summary.csv` | 15 | Stage × index summaries of combined-direction β |

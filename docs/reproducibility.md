@@ -72,7 +72,7 @@ The first three scripts read the local spatial input and overwrite corresponding
 | Ring observations | 300 |
 | Radial profiles with outer ring lower than inner | 75 of 75 |
 | Monotonic decreasing radial profiles | 67 of 75 |
-| Median directional asymmetry | 35.01% |
+| Median directional asymmetry | 34.41% |
 | Maximum directional asymmetry | 96.42% |
 | Maximum baseline mean reproduction error | 4.44×10⁻¹⁶ |
 
@@ -80,9 +80,9 @@ See [analytical validation](validation.md) for stage-specific WDRVI and robustne
 
 ## 5. Interpretation and scope
 
-The primary coefficients are fitted **separately for erosion and dilation** as through-origin regressions of relative vegetation-index change against effective mask-area change. The combined-direction β files are supporting diagnostics only. Relative spectral changes are normalized by `|VI_0|`; results can be amplified for a near-zero baseline index.
+The primary coefficients are fitted **separately for erosion and dilation** as through-origin regressions of relative vegetation-index change against effective mask-area change. Outward dilation preserves the entire plot-level baseline mask; canopy attributed to neighboring plots is excluded only from the newly added exterior area, maintaining nested dilation masks. The combined-direction β files are supporting diagnostics only. Relative spectral changes are normalized by `|VI_0|`; results can be amplified for a near-zero baseline index.
 
-Five plots at distinct N rates are not replicated N treatments. The five flights are repeated observations, and perturbations/radial rings do not increase the biological sample size. No causal fertilizer-response or inferential significance claims are warranted.
+The leave-one-plot-out influence diagnostic measures changes in the mean absolute coefficient and does not establish stability of the median summaries in the primary figures. Five plots at distinct N rates are not replicated N treatments. The five flights are repeated observations, and perturbations/radial rings do not increase the biological sample size. No causal fertilizer-response or inferential significance claims are warranted.
 
 ## 6. Provenance and licensing
 
