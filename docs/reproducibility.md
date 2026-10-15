@@ -88,4 +88,4 @@ The leave-one-plot-out influence diagnostic measures changes in the mean absolut
 
 The original 2024 spatial inputs and original UAV photography are excluded from Git because of their size. Therefore, a clean clone does not reproduce the **upstream radiometric calibration, image mosaicking, or pixel extraction** unless those inputs are separately supplied. It does support analytical reproduction from the released numerical tables.
 
-Figure 1 is a cartographic composite; Figure 2 a methodological schematic. Figure 3 requires original R6 spatial data. See [figure provenance](figure_provenance.md). Earlier nitrogen/yield work is archived under `legacy_previous_manuscript/` and is separate from the present sensitivity analysis.
+Figure 1 is a cartographic composite; Figure 2 a methodological schematic. Figure 3 requires original R6 spatial data. See [figure provenance](figure_provenance.md).
