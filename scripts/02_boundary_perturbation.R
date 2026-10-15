@@ -1,5 +1,5 @@
 # ============================================================
-# 09_boundary_perturbation.R
+# 02_boundary_perturbation.R
 #
 # Purpose
 # -------
@@ -12,7 +12,8 @@
 #
 # Negative values erode the segmented canopy.
 # Positive values dilate the segmented canopy.
-# Canopy assigned to another subplot is removed from dilated masks.
+# Baseline masks are preserved under dilation. Neighboring canopy is
+# excluded ONLY from the newly added area, so the own baseline never shrinks.
 #
 # Inputs per flight
 # -----------------
@@ -566,6 +567,13 @@ for (i in seq_len(nrow(flights))) {
       other_canopy_raw
     )
 
+    # Preserve the full baseline canopy; remove neighboring canopy only
+    # outside the own baseline. The original segmented masks are unchanged.
+    other_canopy_outside_own <- terra::erase(
+      other_canopy_union,
+      canopy_union
+    )
+
     for (d_cm in perturb_cm) {
 
       d_m <- d_cm / 100
@@ -601,14 +609,16 @@ for (i in seq_len(nrow(flights))) {
           raw_geom
         )
 
+        # Report only the overlap actually excluded from the outward
+        # increment, not shared baseline area that remains in both masks.
         overlap_other_area_m2 <- safe_intersection_area(
           raw_geom,
-          other_canopy_union
+          other_canopy_outside_own
         )
 
         perturbed_geom <- terra::erase(
           raw_geom,
-          other_canopy_union
+          other_canopy_outside_own
         )
       }
 
