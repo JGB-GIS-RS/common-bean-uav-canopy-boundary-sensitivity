@@ -395,11 +395,13 @@ other_union <- st_union(
   st_geometry(other_masks)
 )
 
+# R2-01: exclude neighboring canopy only outside the own baseline mask.
+# Existing baseline overlaps are preserved, as in the verified script 02.
+other_union_outside_own <- suppressWarnings(
+  st_difference(other_union, st_geometry(example_mask))
+)
 dilated_geom <- suppressWarnings(
-  st_difference(
-    st_geometry(dilated_3_raw),
-    other_union
-  )
+  st_difference(st_geometry(dilated_3_raw), other_union_outside_own)
 )
 
 dilated_3 <- st_sf(
