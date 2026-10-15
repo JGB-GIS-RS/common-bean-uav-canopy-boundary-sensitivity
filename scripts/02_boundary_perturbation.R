@@ -43,7 +43,6 @@
 # The repository root is detected automatically from the current working directory or its parent directories.
 # ============================================================
 
-rm(list = ls())
 gc()
 
 library(terra)
