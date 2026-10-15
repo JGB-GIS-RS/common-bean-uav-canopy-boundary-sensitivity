@@ -7,7 +7,7 @@ Reproducible analysis-ready data and R scripts for the common-bean UAV canopy-bo
 - Five fixed spatial observational units (P1–P5) in the 2024 common-bean crop cycle, Quindío, Colombia; five UAV acquisitions (V4, R5, R6, R7, R8).
 - Each plot had one N-rate context (0, 100, 200, 300, 400 kg N ha⁻¹), without independently replicated N treatments. **Do not interpret these as treatment replicates or infer causal N effects.**
 - Vegetation indices: NDVI, MSAVI, and WDRVI **with α = 0.1**.
-- Controlled canopy-mask erosion and dilation at −3, −2, −1, 0, +1, +2, +3 cm; directional coefficients are fit separately.
+- Controlled canopy-mask erosion and dilation at −3, −2, −1, 0, +1, +2, +3 cm; directional coefficients are fit separately. Dilation preserves the full plot-level baseline mask and excludes neighboring canopy only from the newly incorporated exterior area.
 - Primary normalized metric: `ΔA (%) = 100 (A_d − A_0)/A_0`; `ΔVI (%) = 100 (VI_d − VI_0)/|VI_0|`; slope `β` through the origin in each direction; reported magnitude `|β|`.
 - Near-zero `VI_0` can amplify **relative** WDRVI coefficients. A large relative coefficient is not necessarily a large absolute-index change. Within one plot, flight and index, the common baseline normalization cancels in the ratio of erosion/dilation magnitudes and in directional asymmetry.
 - Perturbations and radial rings are **dependent deterministic/spatial summaries**, not independent biological replicates. Analyses are descriptive; no inferential hypothesis testing is claimed.
@@ -24,7 +24,7 @@ The released WDRVI products use the formulation WDRVI = (α·NIR − Red)/(α·N
 | R7 | 09 Oct | −0.075981 |
 | R8 | 16 Oct | 0.230163 |
 
-Quality-assurance checks: 525 spectral observations; 175 mask-geometry observations; 75 directional plot–stage–index combinations, with both slopes negative in 72; 300 external-ring measurements; all 75 radial profiles lower in the outermost than innermost ring, 67 strictly monotonic. The median directional asymmetry is 35.01% (maximum 96.42%). Details: [analysis validation report](docs/validation.md).
+Quality-assurance checks: 525 spectral observations; 175 mask-geometry observations; 75 directional plot–stage–index combinations, with both slopes negative in 72; 300 external-ring measurements; all 75 radial profiles lower in the outermost than innermost ring, 67 strictly monotonic. The median directional asymmetry is 34.41% (maximum 96.42%). Details: [analysis validation report](docs/validation.md).
 
 ## Project layout
 
