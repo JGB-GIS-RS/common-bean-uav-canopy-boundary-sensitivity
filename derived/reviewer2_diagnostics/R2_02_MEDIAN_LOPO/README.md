@@ -4,7 +4,7 @@ This diagnostic addresses the difference between the **mean-based** LOPO procedu
 
 ## Input and files
 
-- **Fixed input:** [directional_beta_by_plot.csv](../boundary_sensitivity/directional_beta_by_plot.csv), the 75 plot × acquisition × index records released after the R2-01 correction.
+- **Fixed input:** [directional_beta_by_plot.csv](../../boundary_sensitivity/directional_beta_by_plot.csv), the 75 plot × acquisition × index records released after the R2-01 correction.
 - **Reproduction script:** [10_lopo_median_sensitivity.R](../../../scripts/10_lopo_median_sensitivity.R), base R only.
 - **Outputs in this folder:**
   - [R2_02_LOPO_MEDIAN_DETAIL.csv](R2_02_LOPO_MEDIAN_DETAIL.csv): 75 individual plot-omission records.
