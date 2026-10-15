@@ -52,7 +52,6 @@ docs/
   reproducibility.md
   figure_provenance.md
   validation.md
-legacy_previous_manuscript/                # separate earlier N/yield work
 renv.lock
 sessionInfo.txt
 ```
@@ -112,6 +111,6 @@ Run scripts 01–09 in numerical order. Figure 3 (R6 baseline mask and spectral 
 
 ## Reproducibility and provenance
 
-The tracked `renv.lock` and `sessionInfo.txt` document the recorded R environment; local reproducibility was tested in RStudio, but full independent clean-clone execution is not certified here. A separate N/yield-oriented study is archived under `legacy_previous_manuscript/` and is not a source of the present study's vegetation-index observations.
+The tracked `renv.lock` and `sessionInfo.txt` document the recorded R environment; local reproducibility was tested in RStudio, but full independent clean-clone execution is not certified here.
 
 R scripts: MIT License. Distributed data and documentation: CC BY 4.0 unless otherwise specified. Final manuscript citation/DOI to be added after publication.
