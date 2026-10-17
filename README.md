@@ -72,7 +72,7 @@ source("scripts/09_figures_6_7_and_supplement.R")
 
 Outputs include Figure 4, Figure 5, Figures 6–7, Figures S1–S2, and the vector `Supplementary_Materials.pdf`. Figures are written under `figures/` and `figures/boundary_sensitivity/`; generated graphics are ignored by Git.
 
-## Reviewer 2 audit: median-based LOPO (R2-02)
+## Median-based LOPO (R2-02)
 
 The primary figure summarizes median absolute directional slopes across five plots. The original robustness workflow assesses LOPO changes in **means**; an additional R2-02 diagnostic assesses **medians**, median plot-specific dilation/erosion ratios, ratios of marginal medians, and index ordering. These summaries are not interchangeable. In 75 omissions, maxima were 49.83% (erosion median) and 89.93% (dilation median); the median of plot-specific ratios had 0 directional reversals, the ratio of marginal medians had 10, and index order had 0 changes in 50 comparisons.
 
